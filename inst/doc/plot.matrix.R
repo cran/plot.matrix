@@ -120,24 +120,24 @@ plot(x, fmt.cell='%.2f')
 ## ----fig.height=5, fig.width=5-------------------------------------------
 library('plot.matrix')
 library('psych')
-data <- na.omit(bfi[,1:25])
-fa <- fa(data, 5, rotate="varimax")
+data(bfi.2)
+fa <- fa(bfi.2, 5, rotate="varimax")
 par(mar=c(5.1, 4.1, 4.1, 4.1)) # adapt margins
 plot(loadings(fa), cex=0.5)
 
 ## ----fig.height=5, fig.width=5-------------------------------------------
 library('plot.matrix')
 library('psych')
-data <- na.omit(bfi[,1:25])
-fa <- fa(data, 5, rotate="varimax")
+data(bfi.2)
+fa <- fa(bfi.2, 5, rotate="varimax")
 par(mar=c(5.1, 4.1, 4.1, 4.1)) # adapt margins
 plot(loadings(fa), digits=NA)
 
 ## ----fig.height=5, fig.width=5-------------------------------------------
 library('plot.matrix')
 library('psych')
-data <- na.omit(bfi[,1:25])
-fa <- fa(data, 5, rotate="varimax")
+data(bfi.2)
+fa <- fa(bfi.2, 5, rotate="varimax")
 par(mar=c(5.1, 4.1, 4.1, 4.1)) # adapt margins
 plot(loadings(fa), reorder=FALSE, cex=0.5)
 
