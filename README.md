@@ -1,5 +1,16 @@
 # plot.matrix
-Visualizes a matrix object plainly as heatmap. It provides a single S3 function `plot` for matrices and a function `assignColors` which assigns a specific color to each value of a vector.
+Visualizes a matrix object plainly as heatmap. It provides a 
+
+* single S3 function `plot` for matrices,
+* function `assignColors` which assigns a specific color to each value of a vector, and
+* specific functions for loadings, correlation and p-values matrices.
+
+View the vignette on [GitHub](http://htmlpreview.github.com/?https://github.com/sigbertklinke/plot.matrix/blob/master/vignettes/plot.matrix.html) or after installing with
+
+```R
+library("plot.matrix")
+vignette("plot.matrix") 
+```
 
 # Installation  
 
@@ -92,7 +103,12 @@ assignColors(sample(letters[1:10], 50, replace=TRUE))
 ```
 
 # History
-  * 2019-07-03 Added bfi data set
+  * 2019-12-06 Version 1.4
+  * 2019-12-05 Extended treatment for NAs, sorting for loadings matrices changed
+  * 2019-09-16 Math annotation for plot bug(?)
+  * 2019-07-09 Added further data sets, gray scale support, text color change
+  * 2019-07-03 Added bfi data set, Version 1.2
+  * 2019-05-13 Version 1.1
   * 2019-05-10 plot.loadings, error in y-axis labelling
   * 2018-12-20 Vignette, assignColors
   * 2018-12-01 Added examples for tables, extended formatting possibilities

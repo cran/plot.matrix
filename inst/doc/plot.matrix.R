@@ -117,6 +117,41 @@ plot(x, digits=4, cex=0.5)
 # change just matrix entries (no plus sign)
 plot(x, fmt.cell='%.2f')
 
+## ----fig.height=4, fig.width=4-------------------------------------------
+x <- matrix(c(NA, 1, 2, 3), ncol=2)
+par(mar=c(5.1, 4.1, 4.1, 4.1))   # adapt margins
+plot(x, na.col='black', fmt.cell='%.0f')
+
+## ----fig.height=4, fig.width=4-------------------------------------------
+x <- matrix(c(NA, 1, 2, 3), ncol=2)
+par(mar=c(5.1, 4.1, 4.1, 4.1))   # adapt margins
+plot(x, na.col='black', fmt.cell='%.0f', na.print=FALSE)
+plot(x, na.col='black', fmt.cell='%.0f', na.print='Missing')
+
+## ----fig.height=4, fig.width=4-------------------------------------------
+x <- matrix(c(NA, 1, 2, 3), ncol=2)
+par(mar=c(5.1, 4.1, 4.1, 4.1))   # adapt margins
+plot(x, fmt.cell='%.0f', na.cell=FALSE)
+
+## ----fig.height=4, fig.width=4-------------------------------------------
+par(mar=c(5.1, 4.1, 4.1, 4.1))   # adapt margins
+# Never replace text color by black or white
+plot(x, digits=2, text.cell=list(col="yellow", cex=0.75), max.col=-1) 
+
+## ----fig.height=4, fig.width=4-------------------------------------------
+par(mar=c(5.1, 4.1, 4.1, 4.1))   # adapt margins
+plot(x, digits=2, text.cell=list(col="yellow", cex=0.75)) 
+
+## ----fig.height=4, fig.width=4-------------------------------------------
+par(mar=c(5.1, 4.1, 4.1, 4.1))   # adapt margins
+# In fewer cells the text color will be replaced by black
+plot(x, digits=2, text.cell=list(col="yellow", cex=0.75), max.col=35) 
+
+## ----fig.height=4, fig.width=4-------------------------------------------
+par(mar=c(5.1, 4.1, 4.1, 4.1))   # adapt margins
+# In more cells the text color will be replaced by black
+plot(x, digits=2, text.cell=list(col="yellow", cex=0.75), max.col=140) 
+
 ## ----fig.height=5, fig.width=5-------------------------------------------
 library('plot.matrix')
 library('psych')
@@ -124,6 +159,14 @@ data(bfi.2)
 fa <- fa(bfi.2, 5, rotate="varimax")
 par(mar=c(5.1, 4.1, 4.1, 4.1)) # adapt margins
 plot(loadings(fa), cex=0.5)
+
+## ----fig.height=5, fig.width=5-------------------------------------------
+library('plot.matrix')
+library('psych')
+data(bfi.2)
+fa <- fa(bfi.2, 5, rotate="varimax")
+par(mar=c(5.1, 4.1, 4.1, 4.1)) # adapt margins
+plot(loadings(fa), cex=0.5, gray=TRUE)
 
 ## ----fig.height=5, fig.width=5-------------------------------------------
 library('plot.matrix')
@@ -140,4 +183,59 @@ data(bfi.2)
 fa <- fa(bfi.2, 5, rotate="varimax")
 par(mar=c(5.1, 4.1, 4.1, 4.1)) # adapt margins
 plot(loadings(fa), reorder=FALSE, cex=0.5)
+
+## ----fig.height=5, fig.width=5-------------------------------------------
+library('plot.matrix')
+data(Titanic.cramer)
+par(mar=c(5.1, 4.1, 4.1, 4.1)) # adapt margins
+plot(as.assoc(Titanic.cramer))
+
+## ----fig.height=5, fig.width=5-------------------------------------------
+library('plot.matrix')
+library('datasets')
+c <- cor(airquality[,1:4], use="complete")
+par(mar=c(5.1, 4.1, 4.1, 4.1)) # adapt margins
+plot(as.cor(c))
+
+## ----fig.height=5, fig.width=5-------------------------------------------
+library('plot.matrix')
+data(Titanic.cramer)
+par(mar=c(5.1, 4.1, 4.1, 4.1)) # adapt margins
+plot(as.assoc(Titanic.cramer), gray=TRUE)
+
+## ----fig.height=5, fig.width=5-------------------------------------------
+library('plot.matrix')
+data(Titanic.cramer)
+par(mar=c(5.1, 4.1, 4.1, 4.1)) # adapt margins
+plot(as.assoc(Titanic.cramer), digits=NA)
+
+## ----fig.height=5, fig.width=5-------------------------------------------
+library('plot.matrix')
+data(Titanic.cramer)
+par(mar=c(5.1, 4.1, 4.1, 4.1)) # adapt margins
+plot(as.assoc(Titanic.cramer), reorder=FALSE)
+
+## ----fig.height=5, fig.width=5-------------------------------------------
+library('plot.matrix')
+data(air.pvalue)
+par(mar=c(5.1, 4.1, 4.1, 4.1)) # adapt margins
+plot(as.pvalue(air.pvalue))
+
+## ----fig.height=5, fig.width=5-------------------------------------------
+library('plot.matrix')
+data(air.pvalue)
+par(mar=c(5.1, 4.1, 4.1, 4.1)) # adapt margins
+plot(as.pvalue(air.pvalue), gray=TRUE)
+
+## ----fig.height=5, fig.width=5-------------------------------------------
+library('plot.matrix')
+data(air.pvalue)
+par(mar=c(5.1, 4.1, 4.1, 4.1)) # adapt margins
+plot(as.pvalue(air.pvalue), digits=NA)
+
+## ----fig.height=5, fig.width=5-------------------------------------------
+library('plot.matrix')
+data(air.pvalue)
+par(mar=c(5.1, 4.1, 4.1, 4.1)) # adapt margins
+plot(as.pvalue(air.pvalue), reorder=FALSE)
 

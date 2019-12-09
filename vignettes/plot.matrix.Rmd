@@ -148,6 +148,7 @@ You may influence the appearance by setting your own parameters:
 3. `text.cell` list of parameters for putting for matrix entries as texts
 4. `axis.col` and `axis.row` list of parameters for drawing for row and column axes
 5. `key`, `axis.key` and `polygon.key` to draw the key
+6. `max.col` to determine when text color and background color to near
 
 ## Set global parameters
 
@@ -165,6 +166,11 @@ par(mar=c(5.1, 4.1, 4.1, 4.1)) # adapt margins
 # omit all borders
 plot(x, border=NA)
 ```
+
+# Frequently asked questions
+
+* __How can I delete the grid lines?__
+: Use the parameter `border=NA`.
 
 # Modifying a plot
 
@@ -209,7 +215,7 @@ Note that for numeric matrices must hold `length(breaks)==length(col)+1` and for
 
 ### Missing values and out-of-range matrix entries
 
-The parameter `na.col` determines the color for missing values and for matrices outside the current color scheme.
+The parameter `na.col` determines the color for missing values and for matrix entries outside the current color scheme.
 
 ```{r fig.height=4, fig.width=4}
 par(mar=c(5.1, 4.1, 4.1, 4.1))   # adapt margins
@@ -299,7 +305,84 @@ plot(x, digits=4, cex=0.5)
 plot(x, fmt.cell='%.2f')
 ```
 
+## `NA` handling 
+
+Usually `NA` values in a matrix are drawn as white boxes which determined by the value of 
+the `na.col` parameter (default: white) and if the matrix entries shown by `NA
+
+```{r fig.height=4, fig.width=4}
+x <- matrix(c(NA, 1, 2, 3), ncol=2)
+par(mar=c(5.1, 4.1, 4.1, 4.1))   # adapt margins
+plot(x, na.col='black', fmt.cell='%.0f')
+```
+
+You may enforce with `na.print` no printing of `NA`s or using a replacement text
+
+```{r fig.height=4, fig.width=4}
+x <- matrix(c(NA, 1, 2, 3), ncol=2)
+par(mar=c(5.1, 4.1, 4.1, 4.1))   # adapt margins
+plot(x, na.col='black', fmt.cell='%.0f', na.print=FALSE)
+plot(x, na.col='black', fmt.cell='%.0f', na.print='Missing')
+```
+
+With `na.cell` you suppress printing of matrix entries at all
+
+```{r fig.height=4, fig.width=4}
+x <- matrix(c(NA, 1, 2, 3), ncol=2)
+par(mar=c(5.1, 4.1, 4.1, 4.1))   # adapt margins
+plot(x, fmt.cell='%.0f', na.cell=FALSE)
+```
+
+## Automatic text color adjustment
+
+It may happen that the text color and cell background color are [too near](https://en.wikipedia.org/wiki/Color_difference#Euclidean) which means you can not read the text anymore in a cell
+
+```{r fig.height=4, fig.width=4}
+par(mar=c(5.1, 4.1, 4.1, 4.1))   # adapt margins
+# Never replace text color by black or white
+plot(x, digits=2, text.cell=list(col="yellow", cex=0.75), max.col=-1) 
+```
+
+By default the text color is replaced by black or white (which is [farer  away](https://en.wikipedia.org/wiki/Color_difference#Euclidean))
+
+```{r fig.height=4, fig.width=4}
+par(mar=c(5.1, 4.1, 4.1, 4.1))   # adapt margins
+plot(x, digits=2, text.cell=list(col="yellow", cex=0.75)) 
+```
+
+Just replace text color if colors are nearer then the default `max.col=70` 
+
+```{r fig.height=4, fig.width=4}
+par(mar=c(5.1, 4.1, 4.1, 4.1))   # adapt margins
+# In fewer cells the text color will be replaced by black
+plot(x, digits=2, text.cell=list(col="yellow", cex=0.75), max.col=35) 
+```
+
+or farer away then the default
+
+```{r fig.height=4, fig.width=4}
+par(mar=c(5.1, 4.1, 4.1, 4.1))   # adapt margins
+# In more cells the text color will be replaced by black
+plot(x, digits=2, text.cell=list(col="yellow", cex=0.75), max.col=140) 
+```
+
+Of course, the best solution is to choose a good color scheme and a good text color ;)
+
 # Plotting special matrices
+
+For some special matrices we have special plot routines:
+
+* loadings of a factor analysis or principal component analysis: `plot.loadings`
+* correlations: `plot.cor`
+* associations: `plot.assoc`
+* p values: `plot.pvalue`
+
+All plot routines support the parameters
+
+* `gray` and `grey` for gray scale image 
+* `reorder` for reordering rows (default: `reorder=TRUE`)
+
+Note that matrix columns are only reordered if the column names are identical to the row names.
 
 ## Loadings matrix
 
@@ -321,6 +404,19 @@ data(bfi.2)
 fa <- fa(bfi.2, 5, rotate="varimax")
 par(mar=c(5.1, 4.1, 4.1, 4.1)) # adapt margins
 plot(loadings(fa), cex=0.5)
+```
+
+### Gray scale
+
+For using a gray color scheme add `gray=TRUE`or `grey=TRUE` to the call
+
+```{r fig.height=5, fig.width=5}
+library('plot.matrix')
+library('psych')
+data(bfi.2)
+fa <- fa(bfi.2, 5, rotate="varimax")
+par(mar=c(5.1, 4.1, 4.1, 4.1)) # adapt margins
+plot(loadings(fa), cex=0.5, gray=TRUE)
 ```
 
 ### No matrix entries
@@ -348,3 +444,114 @@ fa <- fa(bfi.2, 5, rotate="varimax")
 par(mar=c(5.1, 4.1, 4.1, 4.1)) # adapt margins
 plot(loadings(fa), reorder=FALSE, cex=0.5)
 ```
+
+## Correlations and associations
+
+The S3 function `plot.cor` and `plot.assoc`  allow to create a heatmap with the coefficients. It differs from plotting a matrix by
+
+* the color key ranges from -1 to 1 for correlations and 0 to 1 for associations,
+* the breaks are set to reflect the effect sizes given by Cohen
+* the matrix rows, corresponding to the variables, are reordered using `dist` and `hclust` with the defaults on the rows, 
+* the matrix entries are printed with two digits after the comma.
+
+All parameters described in **Modifying a plot** can be used in `plot.assoc` or `plot.cor` as well.
+
+```{r fig.height=5, fig.width=5}
+library('plot.matrix')
+data(Titanic.cramer)
+par(mar=c(5.1, 4.1, 4.1, 4.1)) # adapt margins
+plot(as.assoc(Titanic.cramer))
+```
+
+```{r fig.height=5, fig.width=5}
+library('plot.matrix')
+library('datasets')
+c <- cor(airquality[,1:4], use="complete")
+par(mar=c(5.1, 4.1, 4.1, 4.1)) # adapt margins
+plot(as.cor(c))
+```
+
+### Gray scale
+
+For using a gray color scheme add `gray=TRUE`or `grey=TRUE` to the call
+
+```{r fig.height=5, fig.width=5}
+library('plot.matrix')
+data(Titanic.cramer)
+par(mar=c(5.1, 4.1, 4.1, 4.1)) # adapt margins
+plot(as.assoc(Titanic.cramer), gray=TRUE)
+```
+
+### No matrix entries
+
+For not printing loading entries use the parameter `digits`: 
+
+```{r fig.height=5, fig.width=5}
+library('plot.matrix')
+data(Titanic.cramer)
+par(mar=c(5.1, 4.1, 4.1, 4.1)) # adapt margins
+plot(as.assoc(Titanic.cramer), digits=NA)
+```
+
+### No reordering of rows
+
+For not reordering the variables use the parameter `reorder`: 
+
+```{r fig.height=5, fig.width=5}
+library('plot.matrix')
+data(Titanic.cramer)
+par(mar=c(5.1, 4.1, 4.1, 4.1)) # adapt margins
+plot(as.assoc(Titanic.cramer), reorder=FALSE)
+```
+
+## P values
+
+The S3 function `plot.pvalue` allows to create a heatmap from a matrix of p values. It differs from plotting a matrix by
+
+* the color key ranges from  0 to 1 
+* the breaks are set to 0, 0.1, 0.05, 0.01, 0.001 and 1
+* the matrix rows, corresponding to the variables, are reordered using `dist` and `hclust` with the defaults on the rows, 
+* the matrix entries are printed with three digits after the comma.
+
+All parameters described in **Modifying a plot** can be used in `plot.pvalue` as well.
+
+```{r fig.height=5, fig.width=5}
+library('plot.matrix')
+data(air.pvalue)
+par(mar=c(5.1, 4.1, 4.1, 4.1)) # adapt margins
+plot(as.pvalue(air.pvalue))
+```
+
+### Gray scale
+
+For using a gray color scheme add `gray=TRUE`or `grey=TRUE` to the call
+
+```{r fig.height=5, fig.width=5}
+library('plot.matrix')
+data(air.pvalue)
+par(mar=c(5.1, 4.1, 4.1, 4.1)) # adapt margins
+plot(as.pvalue(air.pvalue), gray=TRUE)
+```
+
+### No matrix entries
+
+For not printing loading entries use the parameter `digits`: 
+
+```{r fig.height=5, fig.width=5}
+library('plot.matrix')
+data(air.pvalue)
+par(mar=c(5.1, 4.1, 4.1, 4.1)) # adapt margins
+plot(as.pvalue(air.pvalue), digits=NA)
+```
+
+### No reordering of rows
+
+For not reordering the variables use the parameter `reorder`: 
+
+```{r fig.height=5, fig.width=5}
+library('plot.matrix')
+data(air.pvalue)
+par(mar=c(5.1, 4.1, 4.1, 4.1)) # adapt margins
+plot(as.pvalue(air.pvalue), reorder=FALSE)
+```
+
