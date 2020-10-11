@@ -3,14 +3,32 @@
 \name{plot.matrix}
 \alias{plot.matrix}
 \alias{plot}
-\title{plot.matrix}
+\title{plot.matrix
+Visualizes a matrix with a colored heatmap and optionally a color key. It distinguishes between numeric and non-numeric matrices. 
+You may need to modify \code{mar} with the \code{\link[graphics]{par}} command from its default \code{c(5.1,4.1,4.1,2.1)}. 
+For further see the vignette \code{vignette('plot.matrix')}}
 \usage{
-\method{plot}{matrix}(x, y = NULL, breaks = NULL, col = heat.colors,
-  na.col = "white", na.cell = TRUE, na.print = TRUE, digits = NA,
-  fmt.cell = NULL, fmt.key = NULL, polygon.cell = NULL,
-  polygon.key = NULL, text.cell = NULL, key = list(side = 4, las =
-  1), axis.col = list(side = 1), axis.row = list(side = 2),
-  axis.key = NULL, max.col = 70, ...)
+\method{plot}{matrix}(
+  x,
+  y = NULL,
+  breaks = NULL,
+  col = heat.colors,
+  na.col = "white",
+  na.cell = TRUE,
+  na.print = TRUE,
+  digits = NA,
+  fmt.cell = NULL,
+  fmt.key = NULL,
+  polygon.cell = NULL,
+  polygon.key = NULL,
+  text.cell = NULL,
+  key = list(side = 4, las = 1),
+  axis.col = list(side = 1),
+  axis.row = list(side = 2),
+  axis.key = NULL,
+  max.col = 70,
+  ...
+)
 }
 \arguments{
 \item{x}{matrix}
@@ -29,9 +47,9 @@
 
 \item{digits}{number of digits for numeric data or length of string for non-numeric data}
 
-\item{fmt.cell}{format string for writring matrix entries, overwrites \code{digits}, defaults to \code{NULL}}
+\item{fmt.cell}{format string for writing matrix entries, overwrites \code{digits}, defaults to \code{NULL}}
 
-\item{fmt.key}{format string for writring key entries, overwrites \code{digits}, defaults to \code{fmt}}
+\item{fmt.key}{format string for writing key entries, overwrites \code{digits}, defaults to \code{fmt}}
 
 \item{polygon.cell}{list of parameters used for \code{\link[graphics]{polygon}} for heatmap}
 
@@ -52,9 +70,20 @@
 \item{...}{further parameter given to the \code{\link[graphics]{plot}} command}
 }
 \value{
-a plot
+invisibly a list with elements 
+\describe{
+\item{\code{cell.polygon[[i,j]]}}{the \code{polygon} parameters used to draw the elements of the matrix}
+\item{\code{cell.text[[i,j]]}}{the \code{text} parameters used to draw the elements of the matrix}
+\item{\code{plot}}{the \code{plot} parameters used to draw the basic plot}
+\item{\code{axis.col}}{the \code{axis} parameters used to draw column axis}
+\item{\code{axis.row}}{the \code{axis} parameters used to draw row axis}
+\item{\code{key.polygon[[i]]}}{the \code{polygon} parameters used to draw the elements of the key}
+\item{\code{key.axis}}{the \code{axis} parameters used to draw key axis}
+}
+A \code{NULL} means the elements has not been drawn.
 }
 \description{
+plot.matrix
 Visualizes a matrix with a colored heatmap and optionally a color key. It distinguishes between numeric and non-numeric matrices. 
 You may need to modify \code{mar} with the \code{\link[graphics]{par}} command from its default \code{c(5.1,4.1,4.1,2.1)}. 
 For further see the vignette \code{vignette('plot.matrix')}
@@ -108,7 +137,7 @@ depend if \code{plot.matrix} gets a numeric or non-numeric matrix.
 }
 
 If the difference between polygon color and the text color is smaller \code{max.col} then as text color is 
-either \code{white} or \code{black} (depending which one is farer away from the poylgon color). 
+either \code{white} or \code{black} (depending which one is farer away from the polygon color). 
 The distance is computed as \eqn{\Delta C/3} as in \url{https://en.wikipedia.org/wiki/Color_difference#Euclidean} given.
 }
 \note{

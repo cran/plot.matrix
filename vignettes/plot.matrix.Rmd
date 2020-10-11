@@ -22,7 +22,7 @@ knitr::opts_chunk$set(
 
 # General
 
-The aim of the package `plot.matrix` is to visualize a matrix as is with a heatmap. Automatic reording of rows and columns is only done if necessary. This is different as in similar function like ``heatmap``. Additionally it should be user-friendly and give access to a lot of options if necessary.
+The aim of the package `plot.matrix` is to visualize a matrix as is with a heatmap. Automatic reordering of rows and columns is only done if necessary. This is different as in similar function like ``heatmap``. Additionally it should be user-friendly and give access to a lot of options if necessary.
 
 Currently the package implements the S3 functions below such that  you can use the generic `plot` function to plot matrices as heatmaps:
 
@@ -368,6 +368,36 @@ plot(x, digits=2, text.cell=list(col="yellow", cex=0.75), max.col=140)
 
 Of course, the best solution is to choose a good color scheme and a good text color ;)
 
+## Information about drawn elements 
+
+The `plot` command returns invisibly a list of the elements drawn, a bit like `hist`. A `NULL` entry means the element has not been drawn. The data may be useful for adding own elements in the graphic.
+
+```{r fig.height=4, fig.width=4}
+# numeric matrix
+x <- matrix(runif(35), ncol=5) # create a numeric matrix object
+par(mar=c(5.1, 4.1, 4.1, 4.1)) # adapt margins
+res <- plot(x)
+```
+
+Available are the parameters for
+
+* `cell.polygon`, `cell.text`: the polygon and the text used to draw a matrix element,
+* `key.polygon`, `key.axis`: the polygon and the axis used to draw a key element, and
+* `plot`, `axis.col`, `axis.row`: the basic plot and the axes drawn.
+
+```{r}
+#####
+names(res)
+# parameters of polygon which was used to draw x[3,4]
+res$cell.polygon[[3,4]]
+#####
+# parameters of text which was used for x[3,4]
+res$cell.text[[3,4]]  # NULL since no text was drawn
+#####
+# parameters of polygon which was used to draw the second key element
+res$key.polygon[[2]]  
+```
+
 # Plotting special matrices
 
 For some special matrices we have special plot routines:
@@ -393,7 +423,7 @@ In factor or principal component analysis you may want to view the loadings matr
 * the matrix rows, corresponding to the variables, are reordered (according to the breaks),
 * the matrix entries are printed with two digits after the comma.
 
-A typical threshold in factor analysis is an absolute loading greater equal 0.5; thus a factor "explains" 25% of the variance of a variable. Further thresholds are selected such that they explain 50% and 75% of the variable variance. Sometimes it might be useful to check wheter there are loadings a little bit under 0.5, therefore another threshold of 0.4 is added.
+A typical threshold in factor analysis is an absolute loading greater equal 0.5; thus a factor "explains" 25% of the variance of a variable. Further thresholds are selected such that they explain 50% and 75% of the variable variance. Sometimes it might be useful to check whether there are loadings a little bit under 0.5, therefore another threshold of 0.4 is added.
 
 All parameters described in **Modifying a plot** can be used in `plot.loadings` as well.
 

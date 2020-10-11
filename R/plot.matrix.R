@@ -1,5 +1,4 @@
 #' plot.matrix
-#'
 #' Visualizes a matrix with a colored heatmap and optionally a color key. It distinguishes between numeric and non-numeric matrices. 
 #' You may need to modify \code{mar} with the \code{\link[graphics]{par}} command from its default \code{c(5.1,4.1,4.1,2.1)}. 
 #' For further see the vignette \code{vignette('plot.matrix')}
@@ -53,7 +52,7 @@
 #' }
 #'
 #' If the difference between polygon color and the text color is smaller \code{max.col} then as text color is 
-#' either \code{white} or \code{black} (depending which one is farer away from the poylgon color). 
+#' either \code{white} or \code{black} (depending which one is farer away from the polygon color). 
 #' The distance is computed as \eqn{\Delta C/3} as in \url{https://en.wikipedia.org/wiki/Color_difference#Euclidean} given.
 #'
 #' @note The use of \code{fmt} or \code{fmt.key} have the same restrictions as the use of \code{fmt} in \code{\link[base]{sprintf}}: 
@@ -72,8 +71,8 @@
 #' @param na.col color for missing value (default: white)
 #' @param na.cell to draw cells with missing values (default: \code{TRUE})
 #' @param na.print print NA (or any given characters) when values are missing. If \code{FALSE}, nothing is printed. If \code{na.cell} is \code{FALSE}, this will have no effect.
-#' @param fmt.cell format string for writring matrix entries, overwrites \code{digits}, defaults to \code{NULL}
-#' @param fmt.key format string for writring key entries, overwrites \code{digits}, defaults to \code{fmt}
+#' @param fmt.cell format string for writing matrix entries, overwrites \code{digits}, defaults to \code{NULL}
+#' @param fmt.key format string for writing key entries, overwrites \code{digits}, defaults to \code{fmt}
 #' @param polygon.cell list of parameters used for \code{\link[graphics]{polygon}} for heatmap
 #' @param polygon.key list of parameters used for \code{\link[graphics]{polygon}} for key
 #' @param text.cell list of parameters used for \code{\link[graphics]{text}} for matrix entries
@@ -81,11 +80,22 @@
 #' @param axis.row list of parameters used for \code{\link[graphics]{axis}} for axis of matrix rows. Instead of \code{axis.row=list(side=2)} you may use \code{axis.row=2} or \code{axis.col="left"}.
 #' @param max.col numeric: if the distance between the text color and the cell color is smaller then \code{max.col} then either \code{white} or \code{black} will be used as text color, defaults to \code{70}
 #' @param ... further parameter given to the \code{\link[graphics]{plot}} command
-#' @return a plot
+#' @return invisibly a list with elements 
+#' \describe{
+#' \item{\code{cell.polygon[[i,j]]}}{the \code{polygon} parameters used to draw the elements of the matrix}
+#' \item{\code{cell.text[[i,j]]}}{the \code{text} parameters used to draw the elements of the matrix}
+#' \item{\code{plot}}{the \code{plot} parameters used to draw the basic plot}
+#' \item{\code{axis.col}}{the \code{axis} parameters used to draw column axis}
+#' \item{\code{axis.row}}{the \code{axis} parameters used to draw row axis}
+#' \item{\code{key.polygon[[i]]}}{the \code{polygon} parameters used to draw the elements of the key}
+#' \item{\code{key.axis}}{the \code{axis} parameters used to draw key axis}
+#' }
+#' A \code{NULL} means the elements has not been drawn.
 #' @importFrom grDevices heat.colors col2rgb
 #' @importFrom graphics axis polygon text
 #' @importFrom utils modifyList
-#' @export
+#' @export 
+#' @method plot matrix
 #'
 #' @aliases plot
 #' @examples
@@ -176,6 +186,7 @@ plot.matrix <- function(x, y=NULL, breaks=NULL, col=heat.colors,
     res
   }
   #
+  ret      <- list()
   main     <- paste(deparse(substitute(x)), collapse = "\n")
   ### determine color type: set of colors (=1) or color function (=2)
   #coltype <- 0
@@ -299,6 +310,7 @@ plot.matrix <- function(x, y=NULL, breaks=NULL, col=heat.colors,
   if (is.null(args$xaxs)) args$xaxs <- 'i'
   if (is.null(args$yaxs)) args$yaxs <- 'i'
   if (is.null(args$cex))  args$cex  <- 1
+  ret$plot <- args
   do.call('plot', args, quote=TRUE) ### do.call
   ## draw matrix polygons
   # determine color
@@ -351,6 +363,11 @@ plot.matrix <- function(x, y=NULL, breaks=NULL, col=heat.colors,
   tcell <- modifyList(list(), ellipsis[tpar])  
   text.cell <- if (is.null(text.cell)) tcell else modifyList(tcell, text.cell)
   #
+  ret$cell.polygon      <- vector("list", length(x))
+  dim(ret$cell.polygon) <- dim(x) 
+  ret$cell.text         <- vector("list", length(x))
+  dim(ret$cell.text)    <- dim(x) 
+  #
   if (is.null(polygon.cell)) polygon.cell <- list() 
   for (i in rowindex) {
     py             <- nrow(x)-i+1
@@ -360,7 +377,10 @@ plot.matrix <- function(x, y=NULL, breaks=NULL, col=heat.colors,
       polygon.cell$x   <- c(px-0.5, px-0.5, px+0.5, px+0.5)
 #      polygon.cell$col <- color[i,j]
       polygon.cell$col <- colmat[i,j] 
-      if (!(!na.cell && (is.na(x[i,j]) || x[i,j] == "NA"))) do.call('polygon', polygon.cell) ### polygon
+      if (!(!na.cell && (is.na(x[i,j]) || x[i,j] == "NA"))) {
+        do.call('polygon', polygon.cell) ### polygon
+      }
+      ret$cell.polygon[[i,j]] <- polygon.cell # save coordinates
       if (!is.null(fmt.cell)) {
         if (is.na(x[i,j]) || x[i,j] == "NA") {
           text.cell$labels <- "NA"
@@ -382,6 +402,7 @@ plot.matrix <- function(x, y=NULL, breaks=NULL, col=heat.colors,
         if (!is.null(rcl)) { tcc <- text.cell$col; text.cell$col <- rcl}
         #
         do.call('text', text.cell) ## text
+        ret$cell.text[[i,j]] <- text.cell
         #
         if (!is.null(rcl)) { text.cell$col <- tcc}
         #
@@ -397,6 +418,7 @@ plot.matrix <- function(x, y=NULL, breaks=NULL, col=heat.colors,
     }
     if (is.null(axis.col$at))   axis.col$at <- colindex
     do.call('axis', axis.col)
+    ret$axis.col <- axis.col
   }
   if (!is.null(axis.row)) {
     if (is.null(axis.row$labels)) {
@@ -406,6 +428,7 @@ plot.matrix <- function(x, y=NULL, breaks=NULL, col=heat.colors,
     }
     if (is.null(axis.row$at))   axis.row$at   <- rowindex
     do.call('axis', axis.row)
+    ret$axis.row <- axis.row
   }
   ## draw if key necessary 
   if (!is.null(axis.key)) {
@@ -424,11 +447,13 @@ plot.matrix <- function(x, y=NULL, breaks=NULL, col=heat.colors,
     axis.key$labels <- sprintf(fmt.key, breaks) 
     if (is.null(axis.key$las)) axis.key$las <- 1
     do.call('axis', axis.key) ### key axis
+    ret$key.axis <- axis.key
     pcell <- modifyList(list(), ellipsis[ppar])
     polygon.key <- if (is.null(polygon.key)) pcell else modifyList(pcell, polygon.key)
+    ret$key.polygon <- vector("list", length(col))
     for (i in 1:length(col)) {
       if (axis.key$side==1) {
-        
+        # not yet implemented?
       }
       if (axis.key$side==2) {
         polygon.key$x <- c(-0.5, -0.5, 0, 0)
@@ -444,6 +469,8 @@ plot.matrix <- function(x, y=NULL, breaks=NULL, col=heat.colors,
       }
       polygon.key$col <- col[i]
       do.call('polygon', polygon.key) ### polygon
+      ret$key.polygon[[i]] <- polygon.key
     }
   }
+  invisible(ret)
 }
