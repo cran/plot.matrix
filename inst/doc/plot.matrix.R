@@ -49,6 +49,11 @@ par(mar=c(5.1, 4.1, 4.1, 4.1)) # adapt margins
 plot(x, border=NA)
 
 ## ----fig.height=4, fig.width=4------------------------------------------------
+x <- matrix(runif(35), ncol=5) # create a numeric matrix object
+par(mar=c(5.1, 4.1, 4.1, 4.1)) # adapt margins such that all labels are visible
+plot(x, axis.col=list(side=1, las=2), axis.row = list(side=2, las=1))
+
+## ----fig.height=4, fig.width=4------------------------------------------------
 par(mar=c(5.1, 4.1, 4.1, 4.1))   # adapt margins
 # we only want the range of x
 plot(x, breaks=range(x))     
