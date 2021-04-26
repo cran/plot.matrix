@@ -54,6 +54,36 @@ par(mar=c(5.1, 4.1, 4.1, 4.1)) # adapt margins such that all labels are visible
 plot(x, axis.col=list(side=1, las=2), axis.row = list(side=2, las=1))
 
 ## ----fig.height=4, fig.width=4------------------------------------------------
+param_est <- matrix(runif(25), nrow=5)
+par(mar=c(5.1, 4.1, 4.1, 4.1)) # adapt margins such that all labels are visible
+res <- plot(param_est, digits=2, text.cell=list(pos=3, cex=0.75))
+sderr_est <- matrix(runif(25)/10, nrow=5)
+for (i in 1:nrow(param_est)) {
+  for (j in 1:ncol(param_est)) {  
+    args <- res$cell.text[[i,j]]
+    args$labels <- paste0('(', fmt(sderr_est[i,j], 3), ')')
+    args$cex    <- 0.5
+    args$pos    <- 1
+    do.call(text, args)
+  }
+}
+
+## ----fig.height=4, fig.width=4------------------------------------------------
+param_est <- matrix(runif(25), nrow=5)
+par(mar=c(5.1, 4.1, 4.1, 4.1)) # adapt margins such that all labels are visible
+res <- plot(param_est, digits=2, text.cell=list(cex=0.75))
+sderr_est <- matrix(runif(25)/10, nrow=5)
+for (i in 1:nrow(param_est)) {
+  for (j in 1:ncol(param_est)) {  
+    args <- res$cell.text[[i,j]]
+    args$labels <- paste0('(', round(sderr_est[i,j], 3), ')')
+    args$cex    <- 0.6
+    args$y      <- args$y-0.3
+    do.call(text, args)
+  }
+}
+
+## ----fig.height=4, fig.width=4------------------------------------------------
 par(mar=c(5.1, 4.1, 4.1, 4.1))   # adapt margins
 # we only want the range of x
 plot(x, breaks=range(x))     
@@ -90,6 +120,19 @@ plot(x, key=NULL)
 par(mar=c(5.1, 4.1, 5.1, 4.1))   # adapt margins
 # move key to the top and make axis text smaller
 plot(x, key=list(side=3, cex.axis=0.75), breaks=c(0,1))
+
+## ----fig.height=4, fig.width=4------------------------------------------------
+par(mar=c(5.1, 4.1, 5.1, 4.1))   # adapt margins
+# move key to the top, make axis text smaller, and move key farther away from the plot
+plot(x, key=list(side=3, cex.axis=0.75), breaks=c(0,1), spacing.key=2)
+
+## ----fig.height=4, fig.width=4------------------------------------------------
+par(mar=c(5.1, 4.1, 5.1, 4.1))   # adapt margins
+xl  <- array(runif(1e4), c(1e2, 1e2))
+brk <- 20
+plot(xl, border=NA, breaks=brk, col=heat.colors(brk), 
+     key=list(side=4,  font=2, cex.axis=0.75), fmt.key="%.2f", 
+     polygon.key=NULL, axis.key=NULL, spacing.key=c(3,2,2))
 
 ## ----fig.height=4, fig.width=4------------------------------------------------
 par(mar=c(5.1, 4.1, 4.1, 4.1))   # adapt margins
@@ -174,6 +217,40 @@ res$cell.text[[3,4]]  # NULL since no text was drawn
 #####
 # parameters of polygon which was used to draw the second key element
 res$key.polygon[[2]]  
+
+## -----------------------------------------------------------------------------
+x <- matrix(runif(35), ncol=5) # create a numeric matrix object
+par(mar=c(5.1, 4.1, 4.1, 4.1)) # adapt margins
+res <- plot(x)
+
+for (i in 1:length(res$cell.polygon)) {
+  args <- res$cell.polygon[[i]]
+  args$col     <- NA       # use no color
+  args$density <- 20*x[i]  # density depends on matrix entries
+  args$angle   <- 45       
+  do.call("polygon", args)
+}
+
+## -----------------------------------------------------------------------------
+x <- matrix(runif(35), ncol=5) # create a numeric matrix object
+par(mar=c(5.1, 4.1, 4.1, 4.1)) # adapt margins
+res <- plot(x)
+#
+library("png")
+# PNGs are created from wikimedia commons images, CC0 by C. Koltzenburg 
+# https://commons.wikimedia.org/wiki/File:C.Koltzenburg_-_smiley-yes.xcf
+# https://commons.wikimedia.org/wiki/File:C.Koltzenburg_-_smiley_no.xcf
+happy <- readPNG(system.file('png', 'happy.png', package="plot.matrix"))
+sad   <- readPNG(system.file('png', 'sad.png', package="plot.matrix"))
+
+for (i in 1:length(res$cell.polygon)) {
+  args <- res$cell.polygon[[i]]
+  if (x[i]>0.5) {
+    rasterImage(happy, args$x[1]+0.1, args$y[1]+0.1, args$x[3]-0.1, args$y[2]-0.1)
+  } else {
+    rasterImage(sad, args$x[1]+0.1, args$y[1]+0.1, args$x[3]-0.1, args$y[2]-0.1)
+  }
+}
 
 ## ----fig.height=5, fig.width=5------------------------------------------------
 library('plot.matrix')
