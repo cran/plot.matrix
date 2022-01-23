@@ -83,6 +83,38 @@ for (i in 1:nrow(param_est)) {
   }
 }
 
+## ---- warning=FALSE-----------------------------------------------------------
+par(mar=c(5.1, 4.1, 4.1, 4.1)) # adapt margins such that all labels are visible
+library("plot.matrix")
+library("psych")
+fa <- fa(iris[,-5], 2)
+plot(fa$loadings) 
+plot(fa$scores)
+
+## ---- warning=FALSE-----------------------------------------------------------
+par(mar=c(5.1, 4.1, 4.1, 4.1)) # adapt margins such that all labels are visible
+fa <- fa(iris[,-5], nfactor=2)
+plot(fa$loadings) 
+plot(as.data.frame(fa$scores))
+
+## ---- warning=FALSE-----------------------------------------------------------
+par(mar=c(5.1, 4.1, 4.1, 4.1)) # adapt margins such that all labels are visible
+fa <- fa(iris[,-5], nfactors=2)
+plot(fa$loadings) 
+plot.default(fa$scores)
+
+## ---- warning=FALSE-----------------------------------------------------------
+par(mar=c(5.1, 4.1, 4.1, 4.1)) # adapt margins such that all labels are visible
+library("plot.matrix")
+library("psych")
+fa <- fa(iris[,-5], 2)
+plot(fa$loadings) 
+devtools::unload('plot.matrix') # Package devtools must be installed!
+plot(fa$scores)
+
+## ---- include = FALSE---------------------------------------------------------
+library('plot.matrix')
+
 ## ----fig.height=4, fig.width=4------------------------------------------------
 par(mar=c(5.1, 4.1, 4.1, 4.1))   # adapt margins
 # we only want the range of x
