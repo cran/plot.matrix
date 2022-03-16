@@ -1,5 +1,5 @@
 ---
-title: "plot.matrix"
+title: "`r sprintf('plot.matrix v%s', packageVersion('plot.matrix'))`"
 author: 
 - name: "Sigbert Klinke" 
   email: sigbert@hu-berlin.de
